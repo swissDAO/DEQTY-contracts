@@ -40,7 +40,7 @@ contract DEQTYFactory {
     return _identifier;
   }
 
-  function getIdentifier() private returns (uint256) {
+  function getIdentifier() private view returns (uint256) {
     uint256 _identifier = 1;
     while (identifiers[_identifier]) {
         _identifier = _identifier << 1;
