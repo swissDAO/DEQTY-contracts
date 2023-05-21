@@ -1,12 +1,49 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.9;
 
 contract DEQTYProject {
+    // Define the Project
+    struct ProjectData {
+        address projectCreator;
+        uint256 projectNumber;
+        string projectName;
+        string projectDesc;
+    }
 
-  constructor(
-    string _name,
-    string _description,
-    uint256 _identifier,
-    address _owner) {
-  }
+    ProjectData public project;
+    address public owner;
+
+    mapping(address => uint256) private contributions;
+    uint256 private totalContributions;
+
+    constructor(
+        address _owner,
+        address _projectCreator,
+        uint256 _projectNumber,
+        string memory _projectName,
+        string memory _projectDesc
+    ) {
+        owner = _owner;
+        project.projectCreator = _projectCreator;
+        project.projectNumber = _projectNumber;
+        project.projectName = _projectName;
+        project.projectDesc = _projectDesc;
+    }
+
+    function addContribution(uint256 _amountInHours) public {
+        // Ensure the sender isn't the project creator
+        require(msg.sender != project.projectCreator, "Project Creator cannot contribute to own project");
+
+        // Add the contribution
+        contributions[msg.sender] += _amountInHours;
+        totalContributions += _amountInHours;
+    }
+
+    function getMyTotalContributions() public view returns (uint256) {
+        return contributions[msg.sender];
+    }
+
+    function getTotalContributions() public view returns (uint256) {
+        return totalContributions;
+    }
 }
