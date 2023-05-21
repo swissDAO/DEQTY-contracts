@@ -3,7 +3,7 @@ pragma solidity ^0.8.9;
 
 import "./DEQTYProject.sol";
 
-contract DEQTYDeployer {
+contract DEQTYFactory {
   address[] private deployedProjects;
   mapping(uint256 => bool) private identifiers;
 

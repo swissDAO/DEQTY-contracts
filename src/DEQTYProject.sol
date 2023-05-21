@@ -17,14 +17,12 @@ contract DEQTYProject {
     uint256 private totalContributions;
 
     constructor(
-        address _owner,
-        address _projectCreator,
-        uint256 _projectNumber,
         string memory _projectName,
-        string memory _projectDesc
+        string memory _projectDesc,
+        uint256 _projectNumber,
+        address _owner
     ) {
         owner = _owner;
-        project.projectCreator = _projectCreator;
         project.projectNumber = _projectNumber;
         project.projectName = _projectName;
         project.projectDesc = _projectDesc;
