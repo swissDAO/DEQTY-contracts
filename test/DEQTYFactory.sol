@@ -1,54 +1,55 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "../src/DEQTYProject.sol";
+import "../lib/forge-std/src/Test.sol";
+import "../src/DEQTYFactory.sol";
 
-contract DEQTYDeployer {
-    address[] private deployedProjects;
-    mapping(uint256 => bool) private identifiers;
+contract TestDEQTYFactory is Test {
+    DEQTYFactory private factory;
 
-    event ProjectDeployed(address indexed deployedAddress, address indexed ownerAddress, uint256 identifier);
-
-    constructor(address _hub) {
-        // Add any necessary initialization logic here
+    function beforeEach() public {
+        factory = new DEQTYFactory(address(this));
     }
 
-    function getProjectsLength() external view returns (uint256) {
-        return deployedProjects.length;
+    function testDeployProject() public {
+        // Deploy a project
+        string memory projectName = "Test Project";
+        string memory projectDescription = "This is a test project";
+        address projectOwner = address(0x123);
+
+        uint256 projectIdentifier = factory.deploy(projectName, projectDescription, projectOwner);
+
+        // Get the deployed project
+        address deployedProject = factory.getProject(0);
+
+        // Verify project details
+        assert.equal(DEQTYProject(deployedProject).project.projectName(), projectName, "Incorrect project name");
+        assert.equal(DEQTYProject(deployedProject).project.projectDescription(), projectDescription, "Incorrect project description");
+        assert.equal(DEQTYProject(deployedProject).prooject.projectNumber(), projectIdentifier, "Incorrect project identifier");
+        assert.equal(DEQTYProject(deployedProject).project.projectOwner(), projectOwner, "Incorrect project owner");
     }
 
-    function getProject(uint256 _index) external view returns (address) {
-        require(_index < deployedProjects.length, "Invalid index");
-        return deployedProjects[_index];
+    function testGetProjectsLength() public {
+        // Deploy two projects
+        factory.deploy("Project 1", "Description 1", address(0x123));
+        factory.deploy("Project 2", "Description 2", address(0x456));
+
+        // Get the length of deployed projects
+        uint256 projectsLength = factory.getProjectsLength();
+
+        // Verify the length
+        assert.equal(projectsLength, 2, "Incorrect projects length");
     }
 
-    function deploy(
-        string calldata _name,
-        string calldata _description,
-        address _owner
-    ) external returns (uint256 _identifier) {
-        _identifier = getIdentifier();
-        require(!identifiers[_identifier], "Identifier already used");
-        identifiers[_identifier] = true;
+    function testGetProject() public {
+        // Deploy a project
+        address projectOwner = address(0x123);
+        factory.deploy("Test Project", "This is a test project", projectOwner);
 
-        DEQTYProject project = new DEQTYProject(
-            _name,
-            _description,
-            _identifier,
-            _owner
-        );
-        deployedProjects.push(address(project));
+        // Get the deployed project
+        address deployedProject = factory.getProject(0);
 
-        emit ProjectDeployed(address(project), msg.sender, _identifier);
-
-        return _identifier;
-    }
-
-    function getIdentifier() private returns (uint256) {
-        uint256 _identifier = 1;
-        while (identifiers[_identifier]) {
-            _identifier = _identifier << 1;
-        }
-        return _identifier;
+        // Verify the project address
+        assert.equal(deployedProject, DEQTYProject(deployedProject), "Incorrect project address");
     }
 }
